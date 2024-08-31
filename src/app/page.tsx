@@ -1,10 +1,18 @@
+"use client"
+
 import {FormEvent} from "react";
+import {object} from "prop-types";
 
 export default function Page() {
   async function onSubmit(event: FormEvent<HTMLFormElement>){
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
-    console.log(formData)
+    const username = formData.get('username')
+    const password = formData.get('password')
+    console.log("Test")
+    console.log(username)
+    console.log(password)
+    console.log("Done")
   }
   return (
       <div className={"flex bg-black h-screen justify-center items-center"}>
@@ -12,20 +20,20 @@ export default function Page() {
           <p className={"text-center text-3xl"}>
             Login
           </p>
-          <div>
+          <div className={"flex-col"}>
             <p>
               Username
             </p>
-            <input className={"bg-black border-2 border-white rounded-3xl text-xs p-2 w-80"} placeholder={""}/>
+            <input className={"bg-black border-2 border-white rounded-3xl text-xs p-2 w-80"} placeholder={""} name={"username"}/>
           </div>
-          <div>
+          <div className={"flex-col"}>
             <p>
               Password
             </p>
-            <input className={"bg-black border-2 border-white rounded-3xl text-xs p-2 w-80"} placeholder={""} type={"password"}/>
+            <input name={"password"} className={"bg-black border-2 border-white rounded-3xl text-xs p-2 w-80"} placeholder={""} type={"password"}/>
           </div>
           <div className="flex justify-center">
-            <button type={"submit"} className={"bg-white text-black p-2 rounded-xl text-lg hover:opacity-50"}>
+            <button type={"submit"} className={"flex bg-white text-black p-2 rounded-xl text-lg hover:opacity-50"}>
               Submit
             </button>
           </div>
