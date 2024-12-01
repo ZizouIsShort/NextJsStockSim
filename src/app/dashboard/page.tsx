@@ -1,4 +1,4 @@
-export default function dashboard(){
+export default function Dashboard() {
     return (
         <div>
             <h1 className="text-center text-3xl my-5">StockSim</h1>
@@ -10,61 +10,105 @@ export default function dashboard(){
                 </div>
             </nav>
 
-            <div className="flex flex-col items-center h-[calc(100vh-6rem)] mt-32">
-                <div className="flex justify-between w-3/4 mb-4">
-                    <h2 className="text-xl font-bold">Overview</h2>
-                    <h2 className="text-xl font-bold">Performance</h2>
-                </div>
-                <div className="flex w-3/4 justify-between">
-                    <div className="flex-1 p-6 bg-black text-white border border-white rounded-lg mr-4">
-                        <div className="flex flex-col items-start">
-                            <div className="flex flex-row justify-between">
-                                <div className="flex justify-between mr-5">
-                                    <p className="text-gray-500">Account Value</p>
-                                    <p className="text-2xl font-bold">$100,000.15</p>
-                                </div>
-                                <div className="flex justify-between">
-                                    <p className="text-gray-500">Today's Change</p>
-                                    <p className="text-2xl font-bold text-green-500">+$0.00 (0.00%)</p>
+            <div className="flex flex-col items-center mt-32">
+                <div className="w-3/4 space-y-8">
+                    <div>
+                        <div className="flex justify-between mb-4">
+                            <h2 className="text-xl font-bold">Overview</h2>
+                            <h2 className="text-xl font-bold">Performance</h2>
+                        </div>
+                        <div className="flex justify-between">
+                            <div className="w-[calc(50%-0.5rem)] p-6 bg-black text-white border border-white rounded-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
+                                <div className="flex flex-col items-start">
+                                    <div className="flex flex-row justify-between w-full">
+                                        <div className="flex flex-col">
+                                            <p className="text-gray-500">Account Value (AV)</p>
+                                            <p className="text-2xl font-bold">$100,000.15</p>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <p className="text-gray-500">Today's Change</p>
+                                            <p className="text-2xl font-bold text-green-500">+$0.00 (0.00%)</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-row justify-between w-full mt-3">
+                                        <div className="flex flex-col">
+                                            <p className="text-gray-500">Annual Return</p>
+                                            <p className="text-2xl font-bold">$100,000.15</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-row justify-between w-full mt-3">
+                                        <div className="flex flex-col">
+                                            <p className="text-gray-500">Buying Power (BP)</p>
+                                            <p className="text-2xl font-bold">$100,000.15</p>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <p className="text-gray-500">Cash (For trading)</p>
+                                            <p className="text-2xl font-bold">$100,000.15</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="flex justify-between">
-                                <p className="text-gray-500">Annual Return</p>
-                                <p className="text-2xl font-bold">0.00%</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                                <div className="flex justify-between mr-5">
-                                    <p className="text-gray-500">Buying Power</p>
-                                    <p className="text-2xl font-bold">$100,000.15</p>
-                                </div>
-                                <div className="flex justify-between">
-                                    <p className="text-gray-500">Cash</p>
-                                    <p className="text-2xl font-bold">$100,000.15</p>
+                            <div className="w-[calc(50%-0.5rem)] bg-black text-white border border-white rounded-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
+                                <div className="flex flex-row justify-between">
+                                    {['1W', '1M', '3M', '6M', '1Y'].map((period) => (
+                                        <div
+                                            key={period}
+                                            className="flex-1 text-center cursor-pointer transition-colors duration-300 hover:bg-white group py-3"
+                                        >
+                                            <p className="text-2xl font-bold group-hover:text-black">{period}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="flex-1 p-6 bg-black text-white border border-white rounded-lg">
-                        <div className="flex flex-row justify-between">
-                            <div className="text-center">
-                                <p className="text-2xl font-bold">1W</p>
-                                <p className="text-gray-500">-</p>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-2xl font-bold">1M</p>
-                                <p className="text-gray-500">-</p>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-2xl font-bold">3M</p>
-                                <p className="text-gray-500">-</p>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-2xl font-bold">6M</p>
-                                <p className="text-gray-500">-</p>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-2xl font-bold">1Y</p>
-                                <p className="text-gray-500">-</p>
+
+                    <div>
+                        <h2 className="text-xl font-bold mb-4">Trade</h2>
+                        <div className="w-full p-6 bg-black rounded-xl border border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
+                            <div className="p-8">
+                                <h2 className="text-2xl font-bold mb-6 text-white">Symbol</h2>
+                                <form>
+                                    <div className="mb-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Look up Symbol/Company Name"
+                                            className="w-full px-3 py-2 text-black placeholder-gray-500 border rounded-lg focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300"
+                                        />
+                                    </div>
+                                    <div className="flex mb-4">
+                                        <div className="w-1/2 mr-2">
+                                            <label className="block text-sm font-medium text-white mb-1">Action</label>
+                                            <select
+                                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300 text-black">
+                                                <option>Buy</option>
+                                                <option>Sell</option>
+                                            </select>
+                                        </div>
+                                        <div className="w-1/2 ml-2">
+                                            <label className="block text-sm font-medium text-white mb-1">Quantity</label>
+                                            <input
+                                                type="number"
+                                                defaultValue="0"
+                                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring text-black focus:ring-indigo-100 focus:border-indigo-300"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <button
+                                            type="button"
+                                            className="flex-1 mr-2 bg-black text-white border border-white rounded px-4 py-2 font-bold transition-colors duration-300 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                                        >
+                                            CLEAR
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="flex-1 ml-2 bg-black text-white border border-white rounded px-4 py-2 font-bold transition-colors duration-300 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                                        >
+                                            PREVIEW ORDER
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import {redirect} from "next/navigation";
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -31,9 +32,9 @@ export async function updateSession(request: NextRequest) {
     // supabase.auth.getUser(). A simple mistake could make it very hard to debug
     // issues with users being randomly logged out.
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+    const {data: { user },} = await supabase.auth.getUser()
+    let { data: {session}} = await supabase.auth.getSession()
+    console.log(user)
 
     if (
         !user &&
@@ -43,6 +44,15 @@ export async function updateSession(request: NextRequest) {
         // no user, potentially respond by redirecting the user to the login page
         const url = request.nextUrl.clone()
         url.pathname = '/login'
+        console.log('hi')
+        return NextResponse.redirect(url)
+    }
+    else if (
+        user &&
+        request.nextUrl.pathname.startsWith('/login')
+    ) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
         return NextResponse.redirect(url)
     }
 
