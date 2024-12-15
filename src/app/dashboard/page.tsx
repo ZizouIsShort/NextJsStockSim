@@ -1,7 +1,35 @@
+'use client'
+import {useState, useEffect} from "react";
+
 export default function Dashboard() {
+    const apiKey = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_KEY
+    const [stkName, setName] = useState('')
+    const [buyDate, setBuyQty] = useState('');
+    const [Symbol, takeName] = useState('')
+    const naamSet = (e) => {
+        takeName(e.target.value)
+    }
+    const setBuy = async () => {
+        try{
+            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${Symbol}&apikey=${apiKey}`)
+            const data = await response.json();
+            const timeSeries = data["Time Series (Daily)"];
+            const latestDate = Object.keys(timeSeries)[0];
+            const latestClose = timeSeries[latestDate]["4. close"];
+            setName(latestClose)
+            setBuyQty(latestDate)
+            console.log(buyDate)
+            console.log(stkName)
+        }
+        catch (error){
+            console.log("Error", error)
+        }
+    }
+
+
     return (
-        <div>
-            <h1 className="text-center text-3xl my-5">StockSim</h1>
+        <div className={'bg-black pb-8'}>
+            <h1 className="text-center text-3xl my-5 text-white">StockSim</h1>
             <nav className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-full w-1/3">
                 <div className="flex justify-between items-center px-3 py-2">
                     <p className="text-gray-800 hover:text-gray-600 transition-colors duration-300 cursor-pointer">Portfolio</p>
@@ -67,10 +95,12 @@ export default function Dashboard() {
                         <h2 className="text-xl font-bold mb-4">Trade</h2>
                         <div className="w-full p-6 bg-black rounded-xl border border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
                             <div className="p-8">
-                                <h2 className="text-2xl font-bold mb-6 text-white">Symbol</h2>
+                                <h2 className="text-2xl font-bold mb-6 text-white">Trade</h2>
                                 <form>
                                     <div className="mb-4">
                                         <input
+                                            value={Symbol}
+                                            onChange={naamSet}
                                             type="text"
                                             placeholder="Look up Symbol/Company Name"
                                             className="w-full px-3 py-2 text-black placeholder-gray-500 border rounded-lg focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300"
@@ -96,16 +126,17 @@ export default function Dashboard() {
                                     </div>
                                     <div className="flex justify-between">
                                         <button
+                                            onClick={setBuy}
                                             type="button"
                                             className="flex-1 mr-2 bg-black text-white border border-white rounded px-4 py-2 font-bold transition-colors duration-300 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
                                         >
-                                            CLEAR
+                                            Buy
                                         </button>
                                         <button
-                                            type="submit"
+                                            type="button"
                                             className="flex-1 ml-2 bg-black text-white border border-white rounded px-4 py-2 font-bold transition-colors duration-300 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
                                         >
-                                            PREVIEW ORDER
+                                            Sell
                                         </button>
                                     </div>
                                 </form>
