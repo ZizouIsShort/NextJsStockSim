@@ -1,25 +1,45 @@
 'use client'
 import {useState, useEffect} from "react";
+import {cos} from "three/src/nodes/math/MathNode";
 
 export default function Dashboard() {
     const apiKey = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_KEY
     const [stkName, setName] = useState('')
-    const [buyDate, setBuyQty] = useState('');
-    const [Symbol, takeName] = useState('')
+    const [bDate, setPdate] = useState('');
+    const [pPrice, setPprice] = useState('');
+    const [sDate, setSdate] = useState('')
+    const [sPrice, setSprice] = useState('')
     const naamSet = (e) => {
-        takeName(e.target.value)
+        setName(e.target.value)
+    }
+    const setSell = async () => {
+        try {
+            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`)
+            const data = await response.json()
+            const timeSeries = data["Time Series (Daily)"]
+            const latestDate = Object.keys(timeSeries)[0];
+            const latestClose = timeSeries[latestDate]["4. close"];
+            setSdate(latestDate)
+            setPprice(latestClose)
+            console.log(sDate)
+            console.log(sPrice)
+        }
+        catch (error){
+
+        }
     }
     const setBuy = async () => {
         try{
-            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${Symbol}&apikey=${apiKey}`)
+            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`)
             const data = await response.json();
             const timeSeries = data["Time Series (Daily)"];
             const latestDate = Object.keys(timeSeries)[0];
             const latestClose = timeSeries[latestDate]["4. close"];
-            setName(latestClose)
-            setBuyQty(latestDate)
-            console.log(buyDate)
+            setPprice(latestClose)
+            setPdate(latestDate)
             console.log(stkName)
+            console.log(bDate)
+            console.log(pPrice)
         }
         catch (error){
             console.log("Error", error)
@@ -99,7 +119,7 @@ export default function Dashboard() {
                                 <form>
                                     <div className="mb-4">
                                         <input
-                                            value={Symbol}
+                                            value={stkName}
                                             onChange={naamSet}
                                             type="text"
                                             placeholder="Look up Symbol/Company Name"
@@ -133,6 +153,7 @@ export default function Dashboard() {
                                             Buy
                                         </button>
                                         <button
+                                            onClick={setSell}
                                             type="button"
                                             className="flex-1 ml-2 bg-black text-white border border-white rounded px-4 py-2 font-bold transition-colors duration-300 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
                                         >
