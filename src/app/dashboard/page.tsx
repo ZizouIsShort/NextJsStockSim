@@ -12,6 +12,9 @@ export default function Dashboard() {
     const naamSet = (e) => {
         setName(e.target.value)
     }
+    useEffect(() => {
+        console.log('DATE aur PRICE update ho gaya')
+    },[bDate, pPrice]);
     const setSell = async () => {
         try {
             const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`)
@@ -20,12 +23,12 @@ export default function Dashboard() {
             const latestDate = Object.keys(timeSeries)[0];
             const latestClose = timeSeries[latestDate]["4. close"];
             setSdate(latestDate)
-            setPprice(latestClose)
+            setSprice(latestClose)
             console.log(sDate)
             console.log(sPrice)
         }
         catch (error){
-
+            console.log("Error", error)
         }
     }
     const setBuy = async () => {
