@@ -2,7 +2,14 @@
 import {useState, useEffect} from "react";
 import {cos} from "three/src/nodes/math/MathNode";
 
+
+export let BuyData = {
+    stockName: '',
+    buyDate: '',
+    buyPrice: '',
+};
 export default function Dashboard() {
+
     const apiKey = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_KEY
     const [stkName, setName] = useState('')
     const [bDate, setPdate] = useState('');
@@ -14,7 +21,7 @@ export default function Dashboard() {
     }
     useEffect(() => {
         console.log('DATE aur PRICE update ho gaya')
-    },[bDate, pPrice]);
+    }, [bDate, pPrice]);
     const setSell = async () => {
         try {
             const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`)
@@ -26,26 +33,35 @@ export default function Dashboard() {
             setSprice(latestClose)
             console.log(sDate)
             console.log(sPrice)
-        }
-        catch (error){
+        } catch (error) {
             console.log("Error", error)
         }
     }
     const setBuy = async () => {
-        try{
+        try {
             const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`)
             const data = await response.json();
-            const timeSeries = data["Time Series (Daily)"];
-            const latestDate = Object.keys(timeSeries)[0];
-            const latestClose = timeSeries[latestDate]["4. close"];
-            setPprice(latestClose)
-            setPdate(latestDate)
-            console.log(stkName)
-            console.log(bDate)
-            console.log(pPrice)
-        }
-        catch (error){
-            console.log("Error", error)
+            if (data["Time Series (Daily)"]) {
+                const timeSeries = data["Time Series (Daily)"];
+                const latestDate = Object.keys(timeSeries)[0];
+                const latestClose = timeSeries[latestDate]["4. close"];
+
+                setPdate(latestDate); // Update state for UI
+                setPprice(latestClose);
+
+                // Update and export BuyData object
+                BuyData = {
+                    stockName: stkName,
+                    buyDate: latestDate,
+                    buyPrice: latestClose,
+                };
+
+                console.log("BuyData exported:", BuyData);
+            } else {
+                console.error("Invalid API response or symbol not found.");
+            }
+        } catch (error) {
+            console.error("Error fetching stock data:", error);
         }
     }
 
@@ -69,7 +85,8 @@ export default function Dashboard() {
                             <h2 className="text-xl font-bold">Performance</h2>
                         </div>
                         <div className="flex justify-between">
-                            <div className="w-[calc(50%-0.5rem)] p-6 bg-black text-white border border-white rounded-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
+                            <div
+                                className="w-[calc(50%-0.5rem)] p-6 bg-black text-white border border-white rounded-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
                                 <div className="flex flex-col items-start">
                                     <div className="flex flex-row justify-between w-full">
                                         <div className="flex flex-col">
@@ -99,7 +116,8 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="w-[calc(50%-0.5rem)] bg-black text-white border border-white rounded-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
+                            <div
+                                className="w-[calc(50%-0.5rem)] bg-black text-white border border-white rounded-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
                                 <div className="flex flex-row justify-between">
                                     {['1W', '1M', '3M', '6M', '1Y'].map((period) => (
                                         <div
@@ -116,7 +134,8 @@ export default function Dashboard() {
 
                     <div>
                         <h2 className="text-xl font-bold mb-4">Trade</h2>
-                        <div className="w-full p-6 bg-black rounded-xl border border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
+                        <div
+                            className="w-full p-6 bg-black rounded-xl border border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-shadow duration-300">
                             <div className="p-8">
                                 <h2 className="text-2xl font-bold mb-6 text-white">Trade</h2>
                                 <form>
@@ -139,7 +158,8 @@ export default function Dashboard() {
                                             </select>
                                         </div>
                                         <div className="w-1/2 ml-2">
-                                            <label className="block text-sm font-medium text-white mb-1">Quantity</label>
+                                            <label
+                                                className="block text-sm font-medium text-white mb-1">Quantity</label>
                                             <input
                                                 type="number"
                                                 defaultValue="0"
