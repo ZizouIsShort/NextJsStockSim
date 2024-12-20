@@ -12,12 +12,13 @@ export default function Dashboard() {
     const [pPrice, setPprice] = useState('');
     const [sDate, setSdate] = useState('')
     const [sPrice, setSprice] = useState('')
+    const [qty, setQty] = useState('')
     const naamSet = (e) => {
         setName(e.target.value)
     }
     useEffect(() => {
-        console.log('DATE aur PRICE update ho gaya')
-    }, [bDate, pPrice]);
+        console.log('DATE aur PRICE aur Quantity update ho gaya')
+    }, [bDate, pPrice, qty]);
     const setSell = async () => {
         try {
             const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`)
@@ -35,38 +36,34 @@ export default function Dashboard() {
     }
     const setBuy = async () => {
         try {
-            // Fetch stock data from Alpha Vantage
             const response = await fetch(
                 `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`
             );
 
             if (!response.ok) {
-                console.error("Failed to fetch data from Alpha Vantage:", response.statusText);
+                console.error('Failed to fetch data from Alpha Vantage:', response.statusText);
                 return;
             }
 
             const data = await response.json();
 
-            // Check for valid response structure
-            if (data["Time Series (Daily)"]) {
-                const timeSeries = data["Time Series (Daily)"];
+            if (data['Time Series (Daily)']) {
+                const timeSeries = data['Time Series (Daily)'];
                 const latestDate = Object.keys(timeSeries)[0];
-                const latestClose = timeSeries[latestDate]["4. close"];
+                const latestClose = timeSeries[latestDate]['4. close'];
 
-                // Update state for UI
                 setPdate(latestDate);
                 setPprice(latestClose);
 
-                // Create BuyData object
                 const BuyData = {
                     stockName: stkName,
                     buyDate: latestDate,
                     buyPrice: latestClose,
+                    quantity: parseInt(qty, 10), // Include quantity in the object
                 };
 
-                console.log("BuyData to export:", BuyData);
+                console.log('BuyData to export:', BuyData);
 
-                // Send BuyData to backend
                 const buyDB = await fetch('/dashboard/buy', {
                     method: 'POST',
                     headers: {
@@ -77,17 +74,17 @@ export default function Dashboard() {
 
                 if (!buyDB.ok) {
                     const errorText = await buyDB.text();
-                    console.error("Error saving BuyData to database:", errorText);
+                    console.error('Error saving BuyData to database:', errorText);
                     return;
                 }
 
                 const result = await buyDB.json();
-                console.log("BuyData successfully saved:", result);
+                console.log('BuyData successfully saved:', result);
             } else {
-                console.error("Invalid API response or symbol not found.");
+                console.error('Invalid API response or symbol not found.');
             }
         } catch (error) {
-            console.error("Error in setBuy function:", error);
+            console.error('Error in setBuy function:', error);
         }
     };
 
@@ -191,6 +188,7 @@ export default function Dashboard() {
                                                 type="number"
                                                 defaultValue="0"
                                                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring text-black focus:ring-indigo-100 focus:border-indigo-300"
+                                                onChange={(e) => setQty(e.target.value)}
                                             />
                                         </div>
                                     </div>

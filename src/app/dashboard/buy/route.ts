@@ -10,7 +10,7 @@ const supabase = createClient(
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { stockName, buyDate, buyPrice } = body;
+        const { stockName, buyDate, buyPrice, quantity } = body;
 
         // Validate request body
         if (!stockName || !buyDate || !buyPrice) {
@@ -23,6 +23,13 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid buyPrice. It must be a valid number." });
         }
 
+        const parsedQty = parseFloat(quantity);
+        if (isNaN(parsedQty)) {
+            return NextResponse.json({ error: "Invalid Qty. It must be a valid number." });
+        }
+
+        const total_buy = parsedBuyPrice * parsedQty;
+
         // Insert data into the 'trades' table
         const { data, error } = await supabase
             .from("trades")
@@ -31,6 +38,8 @@ export async function POST(req: Request) {
                     stock_name: stockName, // Replace with your actual column name in Supabase
                     purchase_date: buyDate, // Ensure date format matches the database (e.g., ISO 8601)
                     purchase_price: parsedBuyPrice,
+                    purchase_quantity: quantity,
+                    total_buying_cost: total_buy,
                 },
             ]);
 
