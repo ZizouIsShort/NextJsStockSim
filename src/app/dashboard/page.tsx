@@ -3,11 +3,7 @@ import {useState, useEffect} from "react";
 import {cos} from "three/src/nodes/math/MathNode";
 
 
-export let BuyData = {
-    stockName: '',
-    buyDate: '',
-    buyPrice: '',
-};
+
 export default function Dashboard() {
 
     const apiKey = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_KEY
@@ -39,31 +35,62 @@ export default function Dashboard() {
     }
     const setBuy = async () => {
         try {
-            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`)
+            // Fetch stock data from Alpha Vantage
+            const response = await fetch(
+                `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`
+            );
+
+            if (!response.ok) {
+                console.error("Failed to fetch data from Alpha Vantage:", response.statusText);
+                return;
+            }
+
             const data = await response.json();
+
+            // Check for valid response structure
             if (data["Time Series (Daily)"]) {
                 const timeSeries = data["Time Series (Daily)"];
                 const latestDate = Object.keys(timeSeries)[0];
                 const latestClose = timeSeries[latestDate]["4. close"];
 
-                setPdate(latestDate); // Update state for UI
+                // Update state for UI
+                setPdate(latestDate);
                 setPprice(latestClose);
 
-                // Update and export BuyData object
-                BuyData = {
+                // Create BuyData object
+                const BuyData = {
                     stockName: stkName,
                     buyDate: latestDate,
                     buyPrice: latestClose,
                 };
 
-                console.log("BuyData exported:", BuyData);
+                console.log("BuyData to export:", BuyData);
+
+                // Send BuyData to backend
+                const buyDB = await fetch('/dashboard/buy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(BuyData),
+                });
+
+                if (!buyDB.ok) {
+                    const errorText = await buyDB.text();
+                    console.error("Error saving BuyData to database:", errorText);
+                    return;
+                }
+
+                const result = await buyDB.json();
+                console.log("BuyData successfully saved:", result);
             } else {
                 console.error("Invalid API response or symbol not found.");
             }
         } catch (error) {
-            console.error("Error fetching stock data:", error);
+            console.error("Error in setBuy function:", error);
         }
-    }
+    };
+
 
 
     return (
