@@ -18,22 +18,60 @@ export default function Dashboard() {
     }
     useEffect(() => {
         console.log('DATE aur PRICE aur Quantity update ho gaya')
-    }, [bDate, pPrice, qty]);
+    }, [bDate, pPrice, qty, sPrice, sDate]);
     const setSell = async () => {
         try {
-            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`)
-            const data = await response.json()
-            const timeSeries = data["Time Series (Daily)"]
-            const latestDate = Object.keys(timeSeries)[0];
-            const latestClose = timeSeries[latestDate]["4. close"];
-            setSdate(latestDate)
-            setSprice(latestClose)
-            console.log(sDate)
-            console.log(sPrice)
+            const response = await fetch(
+                `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stkName}&apikey=${apiKey}`
+            );
+
+            if (!response.ok) {
+                console.error('Failed to fetch data from Alpha Vantage:', response.statusText);
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data['Time Series (Daily)']) {
+                const timeSeries = data['Time Series (Daily)'];
+                const latestDate = Object.keys(timeSeries)[0];
+                const latestClose = timeSeries[latestDate]['4. close'];
+
+                setPdate(latestDate);
+                setPprice(latestClose);
+
+                const SellData = {
+                    stockName: stkName,
+                    sellDate: latestDate,
+                    sellPrice: latestClose,
+                    quantity: parseInt(qty, 10), // Include quantity in the object
+                };
+
+                console.log('SellData to export:', SellData);
+
+                const sellDB = await fetch('/dashboard/sell', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(SellData),
+                });
+
+                if (!sellDB.ok) {
+                    const errorText = await sellDB.text();
+                    console.error('Error saving BuyData to database:', errorText);
+                    return;
+                }
+
+                const result = await sellDB.json();
+                console.log('SellData successfully saved:', result);
+            } else {
+                console.error('Invalid API response or symbol not found.');
+            }
         } catch (error) {
-            console.log("Error", error)
+            console.error('Error in setBuy function:', error);
         }
-    }
+    };
     const setBuy = async () => {
         try {
             const response = await fetch(
